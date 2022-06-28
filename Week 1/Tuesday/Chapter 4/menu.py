@@ -1,5 +1,6 @@
 import sys
 from todolist import Todolist
+import auth
 
 
 class Menu:
@@ -14,6 +15,7 @@ class Menu:
             "4": self.modify_todo,
             "5": self.quit,
         }
+        auth.authorizer.add_permission("access")
 
     def display_menu(self):
         print(
