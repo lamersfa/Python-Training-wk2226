@@ -28,10 +28,8 @@ class Todo:
         if filter_completion:
             if self.completed:
                 return False
-            else:
-                return filter in self.description or filter in self.tags
-        else:
             return filter in self.description or filter in self.tags
+        return filter in self.description or filter in self.tags
 
     def time_match(self, date, filter_completion):
         """Determine if deadline matches the deadline. Returns True if it matches, False otherwise.
@@ -39,10 +37,8 @@ class Todo:
         if filter_completion:
             if self.completed:
                 return False
-            else:
-                return date == self.deadline
-        else:
             return date == self.deadline
+        return date == self.deadline
 
 
 class Todolist:

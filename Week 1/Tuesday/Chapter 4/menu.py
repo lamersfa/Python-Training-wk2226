@@ -79,7 +79,7 @@ class Menu:
         if answer == 'date':
             date = input("Input the date you want to search for in DD/MM/YYYY format: ")
             comp = input("Do you want to include already completed todos? y/n: ")
-            if comp == 'n' or comp == 'N':
+            if comp in ('n', 'N'):
                 todos = self.todolist.search_date(date, True)
             else:
                 todos = self.todolist.search_date(date, False)
@@ -87,7 +87,7 @@ class Menu:
         else:
             filter = input("Search for: ")
             comp = input("Do you want to include already completed todos? y/n: ")
-            if comp == 'n' or comp == 'N':
+            if comp in ('n', 'N'):
                 todos = self.todolist.search_content(filter, True)
             else:
                 todos = self.todolist.search_content(filter, False)

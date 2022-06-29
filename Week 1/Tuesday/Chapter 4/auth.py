@@ -71,9 +71,8 @@ class Authenticator:
 
         if not self.is_logged_in(username):
             raise NotLoggedInError(username)
-        else:
-            user.is_logged_in = False
-            return True
+        user.is_logged_in = False
+        return True
 
     def is_logged_in(self, username):
         if username in self.users:
@@ -140,9 +139,7 @@ class Authorizer:
         else:
             if username not in perm_set:
                 raise NotPermittedError(username)
-            else:
-                return True
+            return True
 
 
 authorizer = Authorizer(authenticator)
-
