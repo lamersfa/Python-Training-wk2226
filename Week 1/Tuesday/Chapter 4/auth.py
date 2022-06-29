@@ -63,6 +63,18 @@ class Authenticator:
         user.is_logged_in = True
         return True
 
+    def logout(self, username):
+        try:
+            user = self.users[username]
+        except KeyError:
+            raise InvalidUsername(username)
+
+        if not self.is_logged_in(username):
+            raise NotLoggedInError(username)
+        else:
+            user.is_logged_in = False
+            return True
+
     def is_logged_in(self, username):
         if username in self.users:
             return self.users[username].is_logged_in
