@@ -1,5 +1,9 @@
 
 
+def list_number(ranking_list):
+    for i in enumerate(ranking_list):
+        print(f"And on number {i[0] + 1}, it's {i[1]}!")
+
 def unpacker1(*lists):
     apple, banana, kiwi, grape = lists
     print(f"""
@@ -55,6 +59,8 @@ class Dummy:
 
 
 def main():
+    # enumerate
+    list_number(["James", "Carl", "Pete"])
     # Default args, variable args
     unpacker1(1, 3, 5, 2)
     numbers = (2, 5, 7)
