@@ -58,7 +58,7 @@ class DrumCam:
 
         if contours:
             c = max(contours, key=cv2.contourArea)
-            if cv2.contourArea(c) > 0.5:
+            if cv2.contourArea(c) > 60:
                 x, y, w, h = cv2.boundingRect(c)
                 center = (math.floor(x + 0.5 * w), math.floor(y + 0.5 * h))
                 cv2.circle(img, center, 1, (255, 255, 0), 2)

@@ -29,7 +29,6 @@ while True:
         c = max(contours1, key=cv2.contourArea)
         x, y, w, h = cv2.boundingRect(c)
         center1 = (math.floor(x + 0.5 * w), math.floor(y + 0.5 * h))
-        #cv2.rectangle(img, (x, y), (x + w, y + h), (255, 255, 0), 2)
         cv2.circle(img, center1, 1, (255, 255, 0), 2)
 
     if contours2:
@@ -37,7 +36,6 @@ while True:
         x2, y2, w2, h2 = cv2.boundingRect(c2)
         center2 = (math.floor(x2 + 0.5 * w2), math.floor(y2 + 0.5 * h2))
         # draw the biggest contour (c) in green
-        #cv2.rectangle(img, (x2, y2), (x2 + w2, y2 + h2), (255, 255, 0), 2)
         cv2.circle(img, center2, 1, (255, 255, 0), 2)
 
     cv2.imshow("Output", img)
