@@ -9,40 +9,42 @@ class DrumCam:
     Tracks a variable amount of objects, for which the names and bounds of the masks are defined in bounds_list.
     Then gives the positions of the center of these objects to the DrumHandler."""
 
-    def __init__(self, capture, bounds_list, command):
-        self.masks = bounds_list  # TODO: throw error if every element is not name, lower, upper or if it is empty.
+    def __init__(self, capture, bounds_list, command, hihat_off_color, drum_off_color, hflip, vflip):
+        self.masks = bounds_list
         for bounds in bounds_list:
             print(f"Mask for '{bounds[0]}' found.")
-        self.cap = capture  # TODO: throw error if not valid
-        self.width = capture.get(3)  # TODO: Check if it's used
-        self.height = capture.get(4)  # TODO: Check if it's used
+        self.cap = capture
+        self.width = capture.get(3)
+        self.height = capture.get(4)
         self.command = command
-        self.drums = self._drum_init()
+        self.drums = self._drum_init(hihat_off_color, drum_off_color)
+        self.hflip = hflip
+        self.vflip = vflip
 
-    def _drum_init(self):
+    def _drum_init(self, hihat_off_color, drum_off_color):
         """Create the coordinates of the drum rectangles."""
         width = int(self.width)
         height = int(self.height)
         names = [item[0] for item in self.masks]
         drums = [Box('Hi-hat toggle', (0, 0), (2 * math.floor(width / 11),
-                                               math.floor(height / 5)), names, self.command),
+                                               math.floor(height / 5)), names, self.command, hihat_off_color),
                  Box('Hi-hat', (3 * math.floor(width / 11), 0),
-                     (5 * math.floor(width / 11), math.floor(height / 5)), names, self.command),
+                     (5 * math.floor(width / 11), math.floor(height / 5)), names, self.command, drum_off_color),
                  Box('Crash', (6 * math.ceil(width / 11), 0),
-                     (8 * math.ceil(width / 11), math.floor(height / 5)), names, self.command),
+                     (8 * math.ceil(width / 11), math.floor(height / 5)), names, self.command, drum_off_color),
                  Box('Ride', (9 * math.ceil(width / 11), 0),
-                     (width - 1, math.floor(height / 5)), names, self.command),
+                     (width - 1, math.floor(height / 5)), names, self.command, drum_off_color),
                  Box('Snare', (3 * math.floor(width / 11), 2 * math.floor(height / 5)),
-                     (5 * math.floor(width / 11), 3 * math.floor(height / 5)), names, self.command),
+                     (5 * math.floor(width / 11), 3 * math.floor(height / 5)), names, self.command, drum_off_color),
                  Box('Bass', (6 * math.ceil(width / 11), 2 * math.floor(height / 5)),
-                     (8 * math.ceil(width / 11), 3 * math.floor(height / 5)), names, self.command),
+                     (8 * math.ceil(width / 11), 3 * math.floor(height / 5)), names, self.command, drum_off_color),
                  Box('High tom', (0, 4 * math.floor(height / 5)),
-                     (2 * math.floor(width / 8), height - 1), names, self.command),
+                     (2 * math.floor(width / 8), height - 1), names, self.command, drum_off_color),
                  Box('Mid tom', (3 * math.floor(width / 8), 4 * math.floor(height / 5)),
-                     (5 * math.ceil(width / 8), height - 1), names, self.command),
+                     (5 * math.ceil(width / 8), height - 1), names, self.command, drum_off_color),
                  Box('Floor tom', (6 * math.ceil(width / 8), 4 * math.floor(height / 5)),
                      (width - 1, height - 1), names,
-                     self.command)]  # Name, Top left coord, bottom right coord, mask_names
+                     self.command, drum_off_color)]  # Name, Top left coord, bottom right coord, mask_names, color
         return drums
 
     def contour_handler(self, img, hsv, bounds):
@@ -68,12 +70,13 @@ class DrumCam:
     def drum_drawer(self, img):
         """Draws the rectangles and names of the drums on the screen."""
         for item in self.drums:
+            color = item.cur_color
             text = item.name
             font = cv2.FONT_HERSHEY_SIMPLEX
             text_size = cv2.getTextSize(text, font, 0.5, 2)[0]
             center_x = int((item.x1 + item.x2 - text_size[0]) / 2)
             center_y = int((item.y1 + item.y2 + text_size[1]) / 2)
-            rec = cv2.rectangle(img, (item.x1, item.y1), (item.x2, item.y2), (255, 0, 0), 1)
+            rec = cv2.rectangle(img, (item.x1, item.y1), (item.x2, item.y2), color, 1)
             cv2.putText(rec, text, (center_x, center_y), font, 0.5, (255, 0, 0), 2)
 
     def cam_loop(self):
@@ -82,8 +85,12 @@ class DrumCam:
         while True:
             success, img = self.cap.read()
             if not success:
-                print("TODO throw error")
-            img = cv2.flip(img, 1)  # TODO: make an argument for enabling flip
+                print("Unable to read from the video capture. Exiting.")
+                exit(1)
+            if self.vflip:
+                img = cv2.flip(img, 0)
+            if self.hflip:
+                img = cv2.flip(img, 1)
             hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
             for mask in self.masks:
@@ -91,7 +98,7 @@ class DrumCam:
                 for drum in self.drums:
                     drum.check_bounds(mask[0], coord)
 
-            self.drum_drawer(img)  # TODO: change color when triggered
+            self.drum_drawer(img)
 
             cv2.imshow("Output", img)
             key = cv2.waitKey(1) & 0xFF

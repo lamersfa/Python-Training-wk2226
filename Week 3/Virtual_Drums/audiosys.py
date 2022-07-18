@@ -26,4 +26,5 @@ class AudioSys:
     def play(self, sound):
         """Plays a given sound on an available channel."""
         pygame.mixer.find_channel(True).play(sound)
+        return True
 
