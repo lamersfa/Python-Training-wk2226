@@ -91,9 +91,7 @@ def main():
     # Perform checks for the input
     for i, item in enumerate(color_list):
         try:
-            print(item)
             item = int_check(item)
-            print(item)
             color_check(item)
             if (list_names[i] == 'lower_bound') or (list_names[i] == 'upper_bound'):
                 length_check(item, len(mask_name) * 3)
